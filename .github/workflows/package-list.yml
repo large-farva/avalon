@@ -1,0 +1,33 @@
+name: List Installed Packages and Flatpaks
+
+on:
+  workflow_dispatch:  # Allows manual triggering
+
+jobs:
+  list-packages:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: read
+      id-token: write
+
+    steps:
+      - name: Pull Latest Avalon Image
+        run: |
+          podman pull ghcr.io/${{ github.repository_owner }}/avalon:latest
+
+      - name: List Installed RPM Packages
+        run: |
+          podman run --rm ghcr.io/${{ github.repository_owner }}/avalon:latest rpm -qa | sort | tee installed-rpms.txt
+
+      - name: List Installed Flatpaks
+        run: |
+          podman run --rm ghcr.io/${{ github.repository_owner }}/avalon:latest flatpak list --system | sort | tee installed-flatpaks.txt
+
+      - name: Upload Results
+        uses: actions/upload-artifact@v4
+        with:
+          name: installed-packages
+          path: |
+            installed-rpms.txt
+            installed-flatpaks.txt
