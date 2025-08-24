@@ -2,7 +2,7 @@
 FROM scratch AS ctx
 COPY build_files /
 
-FROM ghcr.io/fedora/fedora-silverblue:42
+FROM quay.io/fedora/fedora-silverblue:42
 
 RUN --mount=type=bind,from=ctx,source=/,target=/ctx \
     --mount=type=cache,dst=/var/cache \
